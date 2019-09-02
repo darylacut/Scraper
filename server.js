@@ -16,11 +16,11 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // database info
-var database = "scraperDB";
-var scrapedData = ["myscrapedData"];
+var scraperDB = "scraperDB";
+var myscrapedData = ["myscrapedData"];
 
 // create variable for mongojs
-var db = mongojs(database, scrapedData);
+var db = mongojs(scraperDB, myscrapedData);
 db.on("error", function(error) {
   console.log("Returned error:", error);
 });
@@ -45,7 +45,39 @@ app.get("/alldata", function(req, res) {
   });
 });
 
+// scraping data from chosen website and putting it in mongoDB using axios get request and using cheerio to handle response data
+app.get("/scrape", function(req, res) {
+  axios.get("https://tinybuddha.com/blog-posts/").then(function(response) {
 
+    var $ = cheerio.load(response.data);
+
+    // getting from .entry-title class element and its children for the title and link
+    $(".entry-title").each(function(i, element) {
+      var title = $(element).children("a").text();
+      var link = $(element).children("a").attr("href");
+
+      // inserting the data into myscrapedData
+      if (title && link) {
+        db.myscrapedData.insert({
+          title: title,
+          link: link
+        },
+        // function to log error if found else insert data into database
+        function(err, inserted) {
+          if (err) {
+            console.log(err);
+          }
+          else {
+            console.log(inserted);
+          }
+        });
+      }
+    });
+  });
+
+  // "Scrape Complete" message to the browser
+  res.send("Scrape Complete");
+});
 
 
 // Listen on port 
