@@ -3,6 +3,7 @@ var express = require("express");
 var mongojs = require("mongojs");
 var axios = require("axios");
 var cheerio = require("cheerio");
+var mongoose = require("mongoose");
 
 // Initialize Express
 var app = express();
@@ -18,6 +19,11 @@ app.use(express.static("public"));
 // database info
 var scraperDB = "scraperDB";
 var myscrapedData = ["myscrapedData"];
+
+// connecting to mongo  
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/scraperDB";
+mongoose.connect(MONGODB_URI);
+
 
 // create variable for mongojs
 var db = mongojs(scraperDB, myscrapedData);
@@ -51,16 +57,19 @@ app.get("/scrape", function(req, res) {
 
     var $ = cheerio.load(response.data);
 
-    // getting from .entry-title class element and its children for the title and link
-    $(".entry-title").each(function(i, element) {
-      var title = $(element).children("a").text();
+    // getting from .archive class element and its children for the title and link
+    $(".archive").each(function(i, element) {
+      var title = $(element).children("a").attr("title");
       var link = $(element).children("a").attr("href");
+      var imgLink = $(element).children("a").children("img").attr("src");
 
-      // inserting the data into myscrapedData
-      if (title && link) {
-        db.myscrapedData.insert({
+
+  // inserting the data into myscrapedData
+  if (title && link && imgLink) {
+    db.myscrapedData.insert({
           title: title,
-          link: link
+          link: link,
+          imgLink: imgLink
         },
         // function to log error if found else insert data into database
         function(err, inserted) {
@@ -74,6 +83,7 @@ app.get("/scrape", function(req, res) {
       }
     });
   });
+
 
   // "Scrape Complete" message to the browser
   res.send("Scrape Complete");
