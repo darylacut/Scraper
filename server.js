@@ -4,6 +4,7 @@ var mongojs = require("mongojs");
 var axios = require("axios");
 var cheerio = require("cheerio");
 var mongoose = require("mongoose");
+var Article = require("./models/article.js");
 
 // Initialize Express
 var app = express();
@@ -37,7 +38,7 @@ app.get("/", function(req, res) {
 });
 
 // getting data from the database
-app.get("/alldata", function(req, res) {
+app.get("/saved", function(req, res) {
   // getting all results from the myscrapedData;
   db.myscrapedData.find({}, function(error, found) {
     // Throw any errors to the console
@@ -50,6 +51,22 @@ app.get("/alldata", function(req, res) {
     }
   });
 });
+
+
+// Route for retrieving all saved 
+// app.get("/saved", function(req, res) {
+//   // Find all aricles
+//   Article.find({})
+//     .then(function(savedArticles) {
+//       // If all Idioms are successfully found, send them back to the client
+//       res.json(savedArticles);
+//     })
+//     .catch(function(err) {
+//       // If an error occurs, send the error back to the client
+//       res.json(err);
+//     });
+// });
+
 
 // scraping data from chosen website and putting it in mongoDB using axios get request and using cheerio to handle response data
 app.get("/scrape", function(req, res) {

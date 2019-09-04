@@ -1,0 +1,22 @@
+.jumbotron {
+    background-image: url("../img/china-1177009_1280_edited.jpg");
+    background-size: cover;
+    background-position-y: 35%;
+    background-position-x: center;
+    color: rgba(255, 255, 255, 0.658);
+    font-family: 'Raleway', sans-serif;
+    text-align: center;
+    align-content: center;
+    margin: 0;
+}
+
+.navbar {
+    align-content: center;
+    height: 8vh;
+    margin-bottom: 2.5%;
+}
+
+.navbar-brand {
+    background: rgba(255, 255, 255, 0.0);
+    border: none;
+}
